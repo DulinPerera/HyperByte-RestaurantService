@@ -2,9 +2,47 @@ import { MdAdd } from "react-icons/md";
 import AddEdit from './AddEdit';
 import Modal from "react-modal";
 import Card from "./Card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllRestaurants, addRestaurant, getRestaurantById } from '../services/restaurantService';
 
 const Home = () => {
+  const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const data = await getAllRestaurants();
+        setRestaurants(data);
+      } catch (error) {
+        console.error('Error fetching restaurants:', error);
+      }
+    };
+
+    fetchRestaurants();
+  }, []);
+
+  const handleSelectRestaurant = async (id) => {
+    try {
+      const data = await getRestaurantById(id);
+      setSelectedRestaurant(data);
+    } catch (error) {
+      console.error('Error fetching restaurant by ID:', error);
+    }
+  };
+
+  const handleAddRestaurant = async (restaurant) => {
+    try {
+      const newRestaurant = await addRestaurant(restaurant);
+      setRestaurants([...restaurants, newRestaurant]);
+    } catch (error) {
+      console.error('Error adding restaurant:', error);
+    }
+  };
+
+  const closeModal = () => {
+    setOpenAddEditModal({ isShown: false, type: "add", data: null });
+  };
 
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
@@ -12,24 +50,23 @@ const Home = () => {
     data: null,
   });
 
-  const closeModal = () => {
-    setOpenAddEditModal({ isShown: false, type: "add", data: null });
-  };
-
   return (
     <>
       <div className="container mx-auto">
         <div className="grid grid-cols-3 gap-4 mt-8">
-          <Card
-            Name="KFC"
-            Address="3rd APR 2024"
-            Telephone="077665697"
-            tags="#Meeting"
-            isPinned={true}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onPinNote={() => {}}
-          />
+          {restaurants.map((item) => (
+            <Card
+              key={item._id}
+              Name={item.name}
+              Address={item.address}
+              Telephone={item.telephone}
+              tags="#Meeting"
+              isPinned={true}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              onPinNote={() => {}}
+            />
+          ))}
         </div>
       </div>
 
@@ -57,6 +94,7 @@ const Home = () => {
           type={openAddEditModal.type}
           noteData={openAddEditModal.data}
           onClose={closeModal}
+          onSave={handleAddRestaurant} 
         />
       </Modal>
     </>

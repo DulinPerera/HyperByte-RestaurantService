@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import restaurantRoutes from "./routes/restaurantsRoutes.js"
+import cors from 'cors';
+
 
 dotenv.config();
 
@@ -9,7 +11,7 @@ const PORT = process.env.PORT || 5050;
 const app = express();
 
 
-
+app.use(cors());
 app.use(express.json());
 
 mongoose.connect(

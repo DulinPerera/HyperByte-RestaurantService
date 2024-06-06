@@ -1,32 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MdClose } from "react-icons/md";
-import { addRestaurant } from '../services/restaurantService';
+import { updateRestaurant } from '../services/restaurantService';
 
-const AddEdit = ({ type, onClose, onSave }) => {
+const AddEdit = ({ type, onClose, onSave, data }) => {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [telephone, setTelephone] = useState("");
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    if (data) {
+      setName(data.name || "");
+      setAddress(data.address || "");
+      setTelephone(data.telephone || "");
+    }
+  }, [data]);
+
   const handleAddNote = async () => {
-    if (!name) {
-      setError("Please enter the name");
+    if (!name || !address || !telephone) {
+      setError("Please fill in all fields");
       return;
     }
-
+    
     setError("");
 
     const restaurant = { name, address, telephone };
 
-    if (type === "edit") {
-      // editNode logic (to be implemented)
-    } else {
-      try {
+    try {
+      if (type === "edit") {
+        await updateRestaurant({ ...restaurant, _id: data._id });
+      } else {
         await onSave(restaurant);
-        onClose();
-      } catch (error) {
-        console.error('Error adding restaurant:', error);
       }
+      onClose();
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
@@ -64,7 +72,7 @@ const AddEdit = ({ type, onClose, onSave }) => {
       <div className="flex flex-col gap-2">
         <label className="input-label">Telephone</label>
         <input 
-          type="number"
+          type="text"
           className="text-xl text-slate-900 outline-none"
           placeholder="Enter Telephone Of Restaurant"
           value={telephone}
@@ -74,7 +82,9 @@ const AddEdit = ({ type, onClose, onSave }) => {
 
       {error && <p className='text-red-500 text-xs pt-4'>{error}</p>}
 
-      <button className='btn-primary font-medium mt-5 p-3' onClick={handleAddNote}>ADD</button>
+      <button className='btn-primary font-medium mt-5 p-3' onClick={handleAddNote}>
+        {type === 'edit' ? "UPDATE" : "ADD"}
+      </button>
     </div>
   );
 };

@@ -9,6 +9,10 @@ const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
+  const handleEdit=(restaurantDetails)=>{
+    setOpenAddEditModal({isShown:true,data:restaurantDetails,type:"edit"})
+  }
+
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
@@ -62,7 +66,7 @@ const Home = () => {
               Telephone={item.telephone}
               tags="#Meeting"
               isPinned={true}
-              onEdit={() => {}}
+              onEdit={() => handleEdit(item)}
               onDelete={() => {}}
               onPinNote={() => {}}
             />
@@ -92,7 +96,7 @@ const Home = () => {
       >
         <AddEdit
           type={openAddEditModal.type}
-          noteData={openAddEditModal.data}
+          data={openAddEditModal.data}
           onClose={closeModal}
           onSave={handleAddRestaurant} 
         />

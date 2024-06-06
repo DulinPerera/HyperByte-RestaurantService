@@ -26,3 +26,8 @@ export const addRestaurant = async (restaurant) => {
     const response = await axios.post(API_URL, restaurant);
     return response.data;
   };
+
+  export const updateRestaurant = async (restaurant) => {
+    const response = await axios.put(`${API_URL}/${restaurant._id}`, restaurant);
+    return response.data;
+  };

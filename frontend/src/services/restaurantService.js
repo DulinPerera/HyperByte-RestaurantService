@@ -27,7 +27,12 @@ export const addRestaurant = async (restaurant) => {
     return response.data;
   };
 
-  export const updateRestaurant = async (restaurant) => {
+export const deleteRestaurant = async (id) => {
+    const response = await axios.delete(`${API_URL}/${id}`);
+    return response.data;
+  };
+
+export const updateRestaurant = async (restaurant) => {
     const response = await axios.put(`${API_URL}/${restaurant._id}`, restaurant);
     return response.data;
   };

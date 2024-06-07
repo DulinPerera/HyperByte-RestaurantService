@@ -3,7 +3,7 @@ import AddEdit from './AddEdit';
 import Modal from "react-modal";
 import Card from "./Card";
 import { useState, useEffect } from "react";
-import { getAllRestaurants, addRestaurant, getRestaurantById } from '../services/restaurantService';
+import { getAllRestaurants, addRestaurant, getRestaurantById,deleteRestaurant  } from '../services/restaurantService';
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
@@ -44,6 +44,15 @@ const Home = () => {
     }
   };
 
+  const handleDeleteRestaurant = async (id) => {
+    try {
+      await deleteRestaurant(id);
+      setRestaurants(restaurants.filter(r => r._id !== id));
+    } catch (error) {
+      console.error('Error deleting restaurant:', error);
+    }
+  };
+
   const closeModal = () => {
     setOpenAddEditModal({ isShown: false, type: "add", data: null });
   };
@@ -56,8 +65,8 @@ const Home = () => {
 
   return (
     <>
-      <div className="container mx-auto">
-        <div className="grid grid-cols-3 gap-4 mt-8">
+      <div className="container mx-auto ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {restaurants.map((item) => (
             <Card
               key={item._id}
@@ -67,11 +76,11 @@ const Home = () => {
               tags="#Meeting"
               isPinned={true}
               onEdit={() => handleEdit(item)}
-              onDelete={() => {}}
+              onDelete={() => { handleDeleteRestaurant(item._id) }}
               onPinNote={() => {}}
-            />
-          ))}
-        </div>
+          />
+      ))}
+          </div>
       </div>
 
       <button

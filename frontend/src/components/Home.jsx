@@ -3,15 +3,25 @@ import AddEdit from './AddEdit';
 import Modal from "react-modal";
 import Card from "./Card";
 import { useState, useEffect } from "react";
-import { getAllRestaurants, addRestaurant, getRestaurantById,deleteRestaurant  } from '../services/restaurantService';
+import { getAllRestaurants, addRestaurant, getRestaurantById, deleteRestaurant, updateRestaurant } from '../services/restaurantService';
+import EmptyCard from "./EmptyCard";
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
-  const handleEdit=(restaurantDetails)=>{
-    setOpenAddEditModal({isShown:true,data:restaurantDetails,type:"edit"})
+  const handleEdit = (restaurantDetails) => {
+    setOpenAddEditModal({ isShown: true, data: restaurantDetails, type: "edit" });
   }
+
+  const handleUpdateRestaurant = async (restaurant) => {
+    try {
+      const updatedRestaurant = await updateRestaurant(restaurant);
+      setRestaurants(restaurants.map(r => r._id === updatedRestaurant._id ? updatedRestaurant : r));
+    } catch (error) {
+      console.error('Error updating restaurant:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -66,21 +76,25 @@ const Home = () => {
   return (
     <>
       <div className="container mx-auto ">
+        {restaurants.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-          {restaurants.map((item) => (
-            <Card
-              key={item._id}
-              Name={item.name}
-              Address={item.address}
-              Telephone={item.telephone}
-              tags="#Meeting"
-              isPinned={true}
-              onEdit={() => handleEdit(item)}
-              onDelete={() => { handleDeleteRestaurant(item._id) }}
-              onPinNote={() => {}}
-          />
-      ))}
+            {restaurants.map((item) => (
+              <Card
+                key={item._id}
+                Name={item.name}
+                Address={item.address}
+                Telephone={item.telephone}
+                tags="#Meeting"
+                isPinned={true}
+                onEdit={() => handleEdit(item)}
+                onDelete={() => { handleDeleteRestaurant(item._id) }}
+                onPinNote={() => { }}
+              />
+            ))}
           </div>
+        ) : (
+          <EmptyCard />
+        )}
       </div>
 
       <button
@@ -103,12 +117,13 @@ const Home = () => {
         contentLabel="Add/Edit Modal"
         className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
       >
-        <AddEdit
-          type={openAddEditModal.type}
-          data={openAddEditModal.data}
-          onClose={closeModal}
-          onSave={handleAddRestaurant} 
-        />
+<AddEdit
+  type={openAddEditModal.type}
+  data={openAddEditModal.data}
+  onClose={closeModal}
+  onSave={openAddEditModal.type === "edit" ? handleUpdateRestaurant : handleAddRestaurant}
+/>
+
       </Modal>
     </>
   );

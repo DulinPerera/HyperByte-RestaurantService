@@ -16,7 +16,7 @@ const AddEdit = ({ type, onClose, onSave, data }) => {
     }
   }, [data]);
 
-  const handleAddNote = async () => {
+  const handleSave = async () => {
     if (!name || !address || !telephone) {
       setError("Please fill in all fields");
       return;
@@ -29,6 +29,7 @@ const AddEdit = ({ type, onClose, onSave, data }) => {
     try {
       if (type === "edit") {
         await updateRestaurant({ ...restaurant, _id: data._id });
+        onSave({ ...restaurant, _id: data._id }); 
       } else {
         await onSave(restaurant);
       }
@@ -82,7 +83,7 @@ const AddEdit = ({ type, onClose, onSave, data }) => {
 
       {error && <p className='text-red-500 text-xs pt-4'>{error}</p>}
 
-      <button className='btn-primary font-medium mt-5 p-3' onClick={handleAddNote}>
+      <button className='btn-primary font-medium mt-5 p-3' onClick={handleSave}>
         {type === 'edit' ? "UPDATE" : "ADD"}
       </button>
     </div>

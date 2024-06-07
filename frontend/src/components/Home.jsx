@@ -84,11 +84,9 @@ const Home = () => {
                 Name={item.name}
                 Address={item.address}
                 Telephone={item.telephone}
-                tags="#Meeting"
-                isPinned={true}
+                tags="#Meeting"        
                 onEdit={() => handleEdit(item)}
                 onDelete={() => { handleDeleteRestaurant(item._id) }}
-                onPinNote={() => { }}
               />
             ))}
           </div>
